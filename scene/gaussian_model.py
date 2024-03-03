@@ -405,3 +405,19 @@ class GaussianModel:
     def add_densification_stats(self, viewspace_point_tensor, update_filter):
         self.xyz_gradient_accum[update_filter] += torch.norm(viewspace_point_tensor.grad[update_filter,:2], dim=-1, keepdim=True)
         self.denom[update_filter] += 1
+
+    def calc_flatten_loss(self):
+        scales = self.get_scaling # N * 3
+        scale_min, indices = scales.min(dim=1)
+        flatten_loss = scale_min.mean(dim=0)
+        return flatten_loss
+    
+    # def calc_normals(self):
+    #     scales = self._scaling # N * 3
+    #     # print(scales.size())
+    #     scale_min, indices = scales.min(dim=1)
+    #     flatten_loss = scale_min.mean(dim=0)
+    #     # n_c = torch.nn.functional.one_hot(indices, num_classes=3).to(torch.float32).unsqueeze(2)
+    #     # n_w = build_rotation(self._rotation) @ n_c
+    #     return flatten_loss
+ 
